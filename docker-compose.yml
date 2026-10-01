@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database (Source of truth for products)
+  postgres:
+    image: postgres:16-alpine
+    container_name: techvault_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: techvault
+      POSTGRES_PASSWORD: techvault123
+      POSTGRES_DB: techvault_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. Qdrant Vector Database (Semantic search engine)
+  qdrant:
+    image: qdrant/qdrant:v1.12.0
+    container_name: techvault_qdrant
+    restart: always
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+  # 3. Redis (Session memory cache)
+  redis:
+    image: redis:7-alpine
+    container_name: techvault_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  qdrant_storage:
+  redis_data:
