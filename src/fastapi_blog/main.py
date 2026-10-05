@@ -12,7 +12,8 @@ from fastapi_blog.schemas import (
     StructuredChatResponse, StructuredChatReply
 )
 from fastapi_blog.rag_chain import (
-    extract_intent, retrieve_products, build_rag_chain, build_structured_rag_chain
+    extract_intent, retrieve_products, build_rag_chain, build_structured_rag_chain,
+    parse_scratchpad
 )
 
 load_dotenv()
@@ -80,14 +81,16 @@ def ai_search_chat(req: ChatRequest):
             context = "No direct matching products found in current inventory."
         
         chain = build_rag_chain()
-        reply = chain.invoke({
+        raw_reply = chain.invoke({
             "context": context,
             "input": req.message
         })
+        thinking, clean_reply = parse_scratchpad(raw_reply)
         
         return ChatResponse(
             session_id=req.session_id,
-            reply=reply,
+            reply=clean_reply,
+            thinking=thinking or None,
             extracted_filters=extracted_filters
         )
     except Exception as e:

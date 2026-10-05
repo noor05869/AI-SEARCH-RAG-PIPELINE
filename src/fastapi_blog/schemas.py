@@ -47,6 +47,10 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     session_id: str
     reply: str
+    thinking: str | None = Field(
+        default=None, 
+        description="Test-time compute security & reasoning scratchpad"
+    )
     extracted_filters: TechVaultSearchFilter | None = None
 
 # --- Structured JSON RAG Schemas (For Structured API Responses) ---
@@ -56,6 +60,10 @@ class StructuredProductItem(BaseModel):
     stock_status: str = Field(description="Stock status e.g. In Stock or Out of Stock")
 
 class StructuredChatReply(BaseModel):
+    thinking: str = Field(
+        default="",
+        description="Internal test-time compute scratchpad: security audit against jailbreaks, catalog fact verification, and response planning"
+    )
     message: str = Field(description="Conversational summary reply from AI Assistant")
     products: list[StructuredProductItem] = Field(default_factory=list, description="Structured array of recommended product objects")
 
